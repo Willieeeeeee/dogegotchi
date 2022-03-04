@@ -15,10 +15,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import edu.ucsd.cse110.dogegotchi.daynightcycle.DayNightCycleMediator;
 import edu.ucsd.cse110.dogegotchi.daynightcycle.IDayNightCycleObserver;
 import edu.ucsd.cse110.dogegotchi.doge.Doge;
 import edu.ucsd.cse110.dogegotchi.doge.DogeView;
+import edu.ucsd.cse110.dogegotchi.doge.FeedDoge;
 import edu.ucsd.cse110.dogegotchi.sprite.Coord;
 import edu.ucsd.cse110.dogegotchi.ticker.AsyncTaskTicker;
 import edu.ucsd.cse110.dogegotchi.ticker.ITicker;
@@ -40,6 +42,8 @@ public class MainActivity extends Activity {
     private MediaPlayer dayPlayer;
 
     private MediaPlayer nightPlayer;
+
+    private FeedDoge feedDoge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +106,11 @@ public class MainActivity extends Activity {
         final ImageButton hamButton       = foodMenu.findViewById(R.id.HamButton),
                           steakButton     = foodMenu.findViewById(R.id.SteakButton),
                           turkeyLegButton = foodMenu.findViewById(R.id.TurkeyLegButton);
-        foodMenu.setVisibility(View.VISIBLE);
+        this.feedDoge=new FeedDoge(foodMenu,doge);
+        doge.register(this.feedDoge);
+        hamButton.setOnClickListener(view -> this.feedDoge.onFeedClicked((Doge.Food.HAM)));
+        steakButton.setOnClickListener(view -> this.feedDoge.onFeedClicked((Doge.Food.STEAK)));
+        turkeyLegButton.setOnClickListener(view -> this.feedDoge.onFeedClicked((Doge.Food.TURKEY)));
 
 
         // hm... should prob do something with this
@@ -230,6 +238,7 @@ public class MainActivity extends Activity {
         // make the doge view observe doge's mood swings
         this.doge.register(this.dogeView);
 
+
     }
 
     @Override
@@ -243,4 +252,5 @@ public class MainActivity extends Activity {
         this.ticker.stop();
         super.onDestroy();
     }
+
 }

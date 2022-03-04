@@ -120,7 +120,7 @@ public class Doge implements ISubject<IDogeObserver>, ITickerObserver, IDayNight
         }
     }
 
-    private void feed(Food newFood){
+    void feed(Food newFood){
         setFood(newFood);
         setState(State.EATING);
     }
@@ -130,6 +130,8 @@ public class Doge implements ISubject<IDogeObserver>, ITickerObserver, IDayNight
             setState(State.HAPPY);
         }
     }
+
+
 
     @Override
     public void onPeriodChange(Period newPeriod) {
