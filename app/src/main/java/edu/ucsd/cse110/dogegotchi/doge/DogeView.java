@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 
 import java.util.Map;
 
@@ -26,21 +27,30 @@ public class DogeView
      */
     private ImmutableMap<Doge.State, Bitmap> viewsPerState;
 
+    private ImmutableMap<Doge.Food, Bitmap> viewsPerFood;
     /**
      * Lookup table for the coordinates for each state.
      */
     private ImmutableMap<Doge.State, Coord> coordsPerState;
 
+    private ImmutableMap<Doge.Food, Coord> coordsPerFood;
+
     public DogeView(final Context context,
                     final Doge.State initialState,
                     final Map<Doge.State, Bitmap> viewsPerState,
-                    final Map<Doge.State, Coord> coordsPerState) {
+                    final Map<Doge.State, Coord> coordsPerState,
+                    final Map<Doge.Food, Bitmap> viewsPerFood,
+                    final Map<Doge.Food, Coord> coordsPerFood) {
         Preconditions.checkNotNull(context);
         Preconditions.checkNotNull(viewsPerState);
         Preconditions.checkNotNull(coordsPerState);
+        Preconditions.checkNotNull(viewsPerFood);
+        Preconditions.checkNotNull(coordsPerFood);
 
         this.viewsPerState  = ImmutableMap.copyOf(viewsPerState);
         this.coordsPerState = ImmutableMap.copyOf(coordsPerState);
+        this.viewsPerFood  = ImmutableMap.copyOf(viewsPerFood);
+        this.coordsPerFood = ImmutableMap.copyOf(coordsPerFood);
 
         // load sprite for initial state
         onStateChange(initialState);
@@ -58,6 +68,12 @@ public class DogeView
         // update super sprite
         this.setSprite(this.viewsPerState.get(newState));
         this.setCoord(this.coordsPerState.get(newState));
+    }
+
+    @Override
+    public void onFoodChange(Doge.Food newFood) {
+        this.setSprite(this.viewsPerFood.get(newFood));
+        this.setCoord(this.coordsPerFood.get(newFood));
     }
 
     /**

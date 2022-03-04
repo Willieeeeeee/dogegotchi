@@ -89,6 +89,7 @@ public class DayNightCycleMediator implements ISubject<IDayNightCycleObserver>, 
         }
     }
 
+
     @Override
     public void register(IDayNightCycleObserver observer) {
         observers.add(observer);

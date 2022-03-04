@@ -1,5 +1,6 @@
 package edu.ucsd.cse110.dogegotchi.doge;
 
+import android.se.omapi.SEService;
 import android.util.Log;
 
 import com.google.common.base.Preconditions;
@@ -7,6 +8,7 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import edu.ucsd.cse110.dogegotchi.daynightcycle.IDayNightCycleObserver;
 import edu.ucsd.cse110.dogegotchi.observer.ISubject;
 import edu.ucsd.cse110.dogegotchi.ticker.ITickerObserver;
 
@@ -17,7 +19,7 @@ import edu.ucsd.cse110.dogegotchi.ticker.ITickerObserver;
  *
  * TODO: Exercise 2 -- enable {@link State#SAD} mood, and add support for {@link State#EATING} behavior.
  */
-public class Doge implements ISubject<IDogeObserver>, ITickerObserver {
+public class Doge implements ISubject<IDogeObserver>, ITickerObserver, IDayNightCycleObserver {
     /**
      * Current number of ticks. Reset after every potential mood swing.
      */
@@ -37,7 +39,7 @@ public class Doge implements ISubject<IDogeObserver>, ITickerObserver {
      * State of doge.
      */
     State state;
-
+    Food food;
     private Collection<IDogeObserver> observers;
 
     /**
@@ -79,8 +81,11 @@ public class Doge implements ISubject<IDogeObserver>, ITickerObserver {
      * **Strictly follow** the Finite State Machine in the write-up.
      */
     private void tryRandomMoodSwing() {
-        // TODO: Exercise 1 -- Implement this method...
+            if(state.equals(State.HAPPY)) {
+                setState(State.SAD);
+            }
     }
+        // TODO: Exercise 1 -- Implement this method...
 
     @Override
     public void register(IDogeObserver observer) {
@@ -107,6 +112,33 @@ public class Doge implements ISubject<IDogeObserver>, ITickerObserver {
         }
     }
 
+    private void setFood(Food newFood) {
+        this.food = newFood;
+        Log.i(this.getClass().getSimpleName(), "Doge food changed to: " + newFood);
+        for (IDogeObserver observer : this.observers) {
+            observer.onFoodChange(newFood);
+        }
+    }
+
+    private void feed(Food newFood){
+        setFood(newFood);
+        setState(State.EATING);
+    }
+
+    private void finishEat(){
+        if (this.state.equals(State.EATING)){
+            setState(State.HAPPY);
+        }
+    }
+
+    @Override
+    public void onPeriodChange(Period newPeriod) {
+        if ((newPeriod == Period.NIGHT) && (this.state != State.EATING))
+            setState(State.SLEEPING);
+        else if (newPeriod == Period.DAY)
+            setState(State.HAPPY);
+    }
+
     /**
      * Moods and actions for our doge.
      */
@@ -116,5 +148,12 @@ public class Doge implements ISubject<IDogeObserver>, ITickerObserver {
         // TODO: Implement asleep and eating states, and transitions between all states.
         SLEEPING,
         EATING;
+    }
+
+    public enum Food {
+        DOGBONE,
+        HAM,
+        STEAK,
+        TURKEY;
     }
 }

@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.ucsd.cse110.dogegotchi.daynightcycle.DayNightCycleMediator;
+import edu.ucsd.cse110.dogegotchi.daynightcycle.IDayNightCycleObserver;
 import edu.ucsd.cse110.dogegotchi.doge.Doge;
 import edu.ucsd.cse110.dogegotchi.doge.DogeView;
 import edu.ucsd.cse110.dogegotchi.sprite.Coord;
@@ -64,6 +65,7 @@ public class MainActivity extends Activity {
         this.dayNightCycleMediator = new DayNightCycleMediator(ticksPerPeriod);
         ticker.register(this.dayNightCycleMediator);
 
+
         /**
          * TODO: Exercise 1 -- Observer
          *
@@ -73,6 +75,7 @@ public class MainActivity extends Activity {
         // create the almighty doge
         createDoge(ticksPerPeriod);
         ticker.register(this.doge);
+        dayNightCycleMediator.register(this.doge);
 
         final GameView gameView = this.findViewById(R.id.GameCanvasView);
         gameView.setMedia(dayPlayer, nightPlayer);
@@ -80,6 +83,7 @@ public class MainActivity extends Activity {
 
         ticker.register(gameView);
         this.dayNightCycleMediator.register(gameView);
+
 
         /**
          * TODO: Exercise 2 -- MVP
@@ -98,7 +102,11 @@ public class MainActivity extends Activity {
         final ImageButton hamButton       = foodMenu.findViewById(R.id.HamButton),
                           steakButton     = foodMenu.findViewById(R.id.SteakButton),
                           turkeyLegButton = foodMenu.findViewById(R.id.TurkeyLegButton);
+        foodMenu.setVisibility(View.VISIBLE);
+
+
         // hm... should prob do something with this
+
 
         /**
          * TODO: Exercise 3 -- Strategy & Factory
@@ -156,6 +164,8 @@ public class MainActivity extends Activity {
         // create Doge view
         Map<Doge.State, Bitmap> stateBitmaps = new HashMap<>();
         Map<Doge.State, Coord > stateCoords  = new HashMap<>();
+        Map<Doge.Food, Bitmap> foodBitmaps = new HashMap<>();
+        Map<Doge.Food, Coord > foodCoords  = new HashMap<>();
 
         // Setup views and coords per state.
         /**
@@ -169,6 +179,12 @@ public class MainActivity extends Activity {
                         new Coord(getResources().getInteger(R.integer.happy_x),
                                   getResources().getInteger(R.integer.happy_y)));
 
+        stateBitmaps.put(Doge.State.SAD,
+                BitmapFactory.decodeResource(getResources(), R.drawable.sad_2x));
+        stateCoords.put(Doge.State.SAD,
+                new Coord(getResources().getInteger(R.integer.sad_x),
+                        getResources().getInteger(R.integer.sad_y)));
+
         // TODO: Exercise 1 - set up sprite and coords for SAD state.
         stateBitmaps.put(Doge.State.SLEEPING,
                          BitmapFactory.decodeResource(getResources(), R.drawable.sleeping_2x));
@@ -176,9 +192,40 @@ public class MainActivity extends Activity {
                         new Coord(getResources().getInteger(R.integer.sleeping_x),
                                   getResources().getInteger(R.integer.sleeping_y)));
 
+        stateBitmaps.put(Doge.State.EATING,
+                BitmapFactory.decodeResource(getResources(), R.drawable.eating_2x));
+        stateCoords.put(Doge.State.EATING,
+                new Coord(getResources().getInteger(R.integer.eating_x),
+                        getResources().getInteger(R.integer.eating_y)));
+
+        foodBitmaps.put(Doge.Food.DOGBONE,
+                BitmapFactory.decodeResource(getResources(), R.drawable.dogbone_2x));
+        foodCoords.put(Doge.Food.DOGBONE,
+                new Coord(getResources().getInteger(R.integer.eating_x) + 0,
+                        getResources().getInteger(R.integer.eating_y) + 200 ));
+
+        foodBitmaps.put(Doge.Food.HAM,
+                BitmapFactory.decodeResource(getResources(), R.drawable.ham_2x));
+        foodCoords.put(Doge.Food.HAM,
+                new Coord(getResources().getInteger(R.integer.eating_x) + 0,
+                        getResources().getInteger(R.integer.eating_y) + 200 ));
+
+        foodBitmaps.put(Doge.Food.STEAK,
+                BitmapFactory.decodeResource(getResources(), R.drawable.steak_2x));
+        foodCoords.put(Doge.Food.STEAK,
+                new Coord(getResources().getInteger(R.integer.eating_x) + 0,
+                        getResources().getInteger(R.integer.eating_y) + 200 ));
+
+        foodBitmaps.put(Doge.Food.TURKEY,
+                BitmapFactory.decodeResource(getResources(), R.drawable.turkey_leg_2x));
+        foodCoords.put(Doge.Food.TURKEY,
+                new Coord(getResources().getInteger(R.integer.eating_x) + 0,
+                        getResources().getInteger(R.integer.eating_y) + 200 ));
+
+
         // TODO: Exercise 2 - Set up sprite and coords for EATING state.
         // TODO: Exercise 3 - You may need to create the Factory of Strategies here
-        this.dogeView = new DogeView(this, Doge.State.HAPPY, stateBitmaps, stateCoords);
+        this.dogeView = new DogeView(this, Doge.State.HAPPY, stateBitmaps, stateCoords,foodBitmaps,foodCoords);
 
         // make the doge view observe doge's mood swings
         this.doge.register(this.dogeView);
